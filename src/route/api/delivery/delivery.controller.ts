@@ -8,7 +8,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { DeliveryService } from 'src/supabase/delivery.service';
+import { DeliveryService } from '../../../supabase/delivery.service';
 @Controller()
 export class DeliveryController {
   private deliveryService: DeliveryService;
