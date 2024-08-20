@@ -1,7 +1,7 @@
 import { DeliveryRepository } from '../repository/delivery.repository';
 import * as xlsx from 'xlsx';
-import { DeliveryItem } from 'src/entity/delivery-item.entity';
-import { OrderStatus } from 'src/enum/order-status.enum';
+import { DeliveryItem } from '../entity/delivery-item.entity';
+import { OrderStatus } from '../enum/order-status.enum';
 
 export class DeliveryService {
   private deliveryRepository: DeliveryRepository;
