@@ -68,3 +68,6 @@ jobs:
           slot-name: ''
           package: .
           
+      - name: 'Configure startup command'
+        run: az webapp config set --name your-app-name --resource-group your-resource-group --startup-file "node dist/main.js"
+          
