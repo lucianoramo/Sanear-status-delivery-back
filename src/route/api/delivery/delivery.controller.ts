@@ -19,7 +19,6 @@ export class DeliveryController {
     this.deliveryService = new DeliveryService();
   }
   @Post('upload-file')
-  @UseInterceptors(FileInterceptor('deliveryFile'))
   async uploadFile(@Req() request: FastifyRequest): Promise<any> {
     // Handle multipart file upload with Fastify
     const files = await request.saveRequestFiles();
