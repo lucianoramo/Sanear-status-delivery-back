@@ -1,0 +1,5 @@
+{
+  "appService.zipIgnorePattern": ["node_modules{,/**}", ".vscode{,/**}"],
+  "appService.defaultWebAppToDeploy": "/subscriptions/14e9985b-29d0-4047-ace5-7ba98068c834/resourceGroups/sanear-resource-group/providers/Microsoft.Web/sites/sanear-status-delivery-back",
+  "appService.deploySubpath": "."
+}
