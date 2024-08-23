@@ -42,7 +42,7 @@ export class DeliveryController {
     return { newItems, updatedItems };
   }
 
-  @Get()
+  @Get('order')
   async getDelivery(@Query('id') id: string) {
     try {
       const delivery = await this.deliveryService.getDeliveryById(id);
