@@ -51,4 +51,9 @@ export class DeliveryController {
       throw new NotFoundException(error.message);
     }
   }
+
+  @Get('/')
+  healthCheck(): string {
+    return 'OK';
+  }
 }
