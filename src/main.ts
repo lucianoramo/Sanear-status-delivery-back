@@ -23,6 +23,6 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api');
 
-  await app.listen(8080);
+  await app.listen(8080, '0.0.0.0');
 }
 bootstrap();
