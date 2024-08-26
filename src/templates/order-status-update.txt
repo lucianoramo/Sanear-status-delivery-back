@@ -1,0 +1,5 @@
+Olá, {nomeCliente}
+
+O status do seu pedido mudou para {status}.
+
+Confira o status no link {link}

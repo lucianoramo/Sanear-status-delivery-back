@@ -1,0 +1,3 @@
+Olá, {nomeCliente}, seu pedido foi criado!
+
+Confira o status no link {link}

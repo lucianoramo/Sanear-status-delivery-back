@@ -13,4 +13,5 @@ export class DeliveryItem {
   estadoCliente: string;
   statusPedido: OrderStatus;
   descricaoTransportadora: string;
+  dataUltimaAtualizacao: Date;
 }

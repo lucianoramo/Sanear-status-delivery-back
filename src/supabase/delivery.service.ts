@@ -2,13 +2,14 @@ import { DeliveryRepository } from '../repository/delivery.repository';
 import * as xlsx from 'xlsx';
 import { DeliveryItem } from '../entity/delivery-item.entity';
 import { OrderStatus } from '../enum/order-status.enum';
+import { EmailService } from './email.service';
+import { getStatusPedidoTitle } from 'src/utils/enum-utils';
 
 export class DeliveryService {
-  private deliveryRepository: DeliveryRepository;
-
-  constructor() {
-    this.deliveryRepository = new DeliveryRepository();
-  }
+  constructor(
+    private readonly deliveryRepository: DeliveryRepository,
+    private readonly emailService: EmailService,
+  ) {}
 
   async getDeliveryById(id: string) {
     const delivery = await this.deliveryRepository.findDeliveryById(id);
@@ -72,6 +73,7 @@ export class DeliveryService {
         deliveryItem.statusPedido =
           OrderStatus[reorderedItem[10] as keyof typeof OrderStatus];
         deliveryItem.descricaoTransportadora = reorderedItem[11];
+        deliveryItem.dataUltimaAtualizacao = new Date();
 
         deliveryItems.push(deliveryItem);
       }
@@ -94,9 +96,45 @@ export class DeliveryService {
 
       if (!existingItem) {
         newItems.push(item);
+
+        // Enviar e-mail de criação de pedido
+        const emailTemplate =
+          this.emailService.getEmailTemplate('order-created');
+        const emailText = emailTemplate
+          .replace('{nomeCliente}', item.descricaoCliente)
+          .replace(
+            '{link}',
+            `https://fkcwv6kvm4.us-west-2.awsapprunner.com/order?id=${item.codigoPedido}`,
+          );
+
+        await this.emailService.sendEmail(
+          item.emailCliente,
+          'Seu pedido foi criado!',
+          emailText,
+        );
       } else if (existingItem.statusPedido !== item.statusPedido) {
         existingItem.statusPedido = item.statusPedido;
+        existingItem.dataUltimaAtualizacao = new Date();
         updatedItems.push(existingItem);
+
+        // Enviar e-mail de atualização de status
+        const emailTemplate = this.emailService.getEmailTemplate(
+          'order-status-update',
+        );
+        const emailText = emailTemplate
+          .replace('{nomeCliente}', existingItem.descricaoCliente)
+          .replace('{status}', getStatusPedidoTitle(existingItem.statusPedido))
+          .replace(
+            '{link}',
+            `
+https://fkcwv6kvm4.us-west-2.awsapprunner.com/order?id=${existingItem.codigoPedido}`,
+          );
+
+        await this.emailService.sendEmail(
+          existingItem.emailCliente,
+          'O status do seu pedido mudou!',
+          emailText,
+        );
       }
     }
 

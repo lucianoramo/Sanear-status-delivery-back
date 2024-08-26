@@ -5,19 +5,14 @@ import {
   Post,
   Req,
   Query,
-  UploadedFile,
-  UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { DeliveryService } from '../../../supabase/delivery.service';
 import { FastifyRequest } from 'fastify';
 @Controller()
 export class DeliveryController {
-  private deliveryService: DeliveryService;
+  //private deliveryService: DeliveryService;
 
-  constructor() {
-    this.deliveryService = new DeliveryService();
-  }
+  constructor(private readonly deliveryService: DeliveryService) {}
   @Post('upload-file')
   async uploadFile(@Req() request: FastifyRequest): Promise<any> {
     // Handle multipart file upload with Fastify
@@ -34,10 +29,13 @@ export class DeliveryController {
     const { newItems, updatedItems } =
       await this.deliveryService.processDeliveryFile(fileBuffer);
 
-    // Salvar novos itens e atualizar itens existentes
-    await this.deliveryService.saveNewItems(newItems);
+    if (newItems.length > 0) {
+      await this.deliveryService.saveNewItems(newItems);
+    }
 
-    await this.deliveryService.updateItems(updatedItems);
+    if (updatedItems.length > 0) {
+      await this.deliveryService.updateItems(updatedItems);
+    }
 
     return { newItems, updatedItems };
   }
