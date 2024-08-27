@@ -6,10 +6,13 @@ import { EmailService } from './email.service';
 import { getStatusPedidoTitle } from 'src/utils/enum-utils';
 
 export class DeliveryService {
-  constructor(
-    private readonly deliveryRepository: DeliveryRepository,
-    private readonly emailService: EmailService,
-  ) {}
+  private deliveryRepository: DeliveryRepository;
+  private emailService: EmailService;
+
+  constructor() {
+    this.deliveryRepository = new DeliveryRepository();
+    this.emailService = new EmailService();
+  }
 
   async getDeliveryById(id: string) {
     const delivery = await this.deliveryRepository.findDeliveryById(id);
