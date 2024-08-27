@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { DeliveryService } from '../../../supabase/delivery.service';
 import { FastifyRequest } from 'fastify';
+import * as fs from 'fs';
 @Controller()
 export class DeliveryController {
   //private deliveryService: DeliveryService;
@@ -17,6 +18,7 @@ export class DeliveryController {
   async uploadFile(@Req() request: FastifyRequest): Promise<any> {
     // Handle multipart file upload with Fastify
     const files = await request.saveRequestFiles();
+    console.log(`DeliveryController => uploadFile => files:`, files);
     const deliveryFile = files.find(
       (file) => file.fieldname === 'deliveryFile',
     );
@@ -25,7 +27,9 @@ export class DeliveryController {
       throw new NotFoundException('File not found');
     }
 
-    const fileBuffer = await deliveryFile.toBuffer(); // Get the buffer of the uploaded file
+    //     const fileBuffer = await deliveryFile.toBuffer();
+    const fileBuffer = await fs.promises.readFile(deliveryFile.filepath);
+    // Get the buffer of the uploaded file
     const { newItems, updatedItems } =
       await this.deliveryService.processDeliveryFile(fileBuffer);
 

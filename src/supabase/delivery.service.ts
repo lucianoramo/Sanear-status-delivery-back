@@ -33,8 +33,14 @@ export class DeliveryService {
 
   private extractDeliveryItemsFromBuffer(fileBuffer: Buffer): DeliveryItem[] {
     const workbook = xlsx.read(fileBuffer, { type: 'buffer' });
+
     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+
     const jsonData = xlsx.utils.sheet_to_json(worksheet, { header: 1 });
+    console.log(
+      `DeliveryService => extractDeliveryItemsFromBuffer => jsonData:`,
+      jsonData,
+    );
 
     const validData = jsonData.slice(6, jsonData.length - 2);
     const seenCodes = new Set<string>();
