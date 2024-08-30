@@ -1,62 +1,83 @@
+import { Injectable, Logger } from '@nestjs/common';
 import { supabase } from '../config/supabaseClient';
 import { DeliveryItem } from '../entity/delivery-item.entity';
 
+@Injectable()
 export class DeliveryRepository {
-  async findDeliveryById(id: string) {
-    const { data, error } = await supabase
-      .from('deliveries')
-      .select('*')
-      .eq('id', id)
-      .single();
+	private readonly logger = new Logger(DeliveryRepository.name);
 
-    if (error) {
-      throw new Error(error.details);
-    }
+	async findDeliveryById(id: string): Promise<DeliveryItem | null> {
+		try {
+			this.logger.log(`Fetching delivery with ID: ${id}`);
+			const { data, error } = await supabase.from('deliveries').select('*').eq('id', id).single();
 
-    return data;
-  }
+			if (error) {
+				this.logger.error(`Failed to fetch delivery with ID: ${id}`, error);
+				throw new Error(`Error fetching delivery by ID: ${error.message}`);
+			}
 
-  async findDeliveryByCodigoPedido(
-    codigoPedido: string,
-  ): Promise<DeliveryItem | null> {
-    const { data, error } = await supabase
-      .from('deliveries')
-      .select('*')
-      .eq('codigoPedido', codigoPedido)
-      .single();
+			this.logger.log(`Delivery with ID: ${id} retrieved successfully`);
+			return data as DeliveryItem;
+		} catch (error) {
+			this.logger.error(`Unexpected error fetching delivery with ID: ${id}`, error);
+			throw error;
+		}
+	}
 
-    if (error) {
-      console.error(
-        `Error querying database for delivery with codigoPedido: ${codigoPedido}`,
-        error,
-      );
-      return null;
-    }
+	async findDeliveryByCodigoPedido(codigoPedido: string): Promise<DeliveryItem | null> {
+		try {
+			this.logger.log(`Fetching delivery with codigoPedido: ${codigoPedido}`);
+			const { data, error } = await supabase.from('deliveries').select('*').eq('codigoPedido', codigoPedido).single();
 
-    return data as DeliveryItem;
-  }
+			if (error) {
+				this.logger.error(`Error querying database for delivery with codigoPedido: ${codigoPedido}`, error);
+				return null;
+			}
 
-  async saveNewItems(newItems: DeliveryItem[]): Promise<void> {
-    const { error } = await supabase.from('deliveries').insert(newItems);
+			this.logger.log(`Delivery with codigoPedido: ${codigoPedido} retrieved successfully`);
+			return data as DeliveryItem;
+		} catch (error) {
+			this.logger.error(`Unexpected error fetching delivery with codigoPedido: ${codigoPedido}`, error);
+			throw error;
+		}
+	}
 
-    if (error) {
-      console.error('Error saving new delivery items', error);
-    }
-  }
+	async saveNewItems(newItems: DeliveryItem[]): Promise<void> {
+		try {
+			this.logger.log(`Saving ${newItems.length} new delivery items`);
+			const { error } = await supabase.from('deliveries').insert(newItems);
 
-  async updateItems(updatedItems: DeliveryItem[]): Promise<void> {
-    for (const item of updatedItems) {
-      const { error } = await supabase
-        .from('deliveries')
-        .update({ statusPedido: item.statusPedido })
-        .eq('codigoPedido', item.codigoPedido);
+			if (error) {
+				this.logger.error('Error saving new delivery items', error);
+				throw new Error(`Error saving new delivery items: ${error.message}`);
+			}
 
-      if (error) {
-        console.error(
-          `Error updating delivery item with codigoPedido: ${item.codigoPedido}`,
-          error,
-        );
-      }
-    }
-  }
+			this.logger.log('New delivery items saved successfully');
+		} catch (error) {
+			this.logger.error('Unexpected error saving new delivery items', error);
+			throw error;
+		}
+	}
+
+	async updateItems(updatedItems: DeliveryItem[]): Promise<void> {
+		for (const item of updatedItems) {
+			try {
+				this.logger.log(`Updating delivery item with codigoPedido: ${item.codigoPedido}`);
+				const { error } = await supabase
+					.from('deliveries')
+					.update({ statusPedido: item.statusPedido })
+					.eq('codigoPedido', item.codigoPedido);
+
+				if (error) {
+					this.logger.error(`Error updating delivery item with codigoPedido: ${item.codigoPedido}`, error);
+					throw new Error(`Error updating delivery item with codigoPedido: ${item.codigoPedido}`);
+				}
+
+				this.logger.log(`Delivery item with codigoPedido: ${item.codigoPedido} updated successfully`);
+			} catch (error) {
+				this.logger.error(`Unexpected error updating delivery item with codigoPedido: ${item.codigoPedido}`, error);
+				throw error;
+			}
+		}
+	}
 }

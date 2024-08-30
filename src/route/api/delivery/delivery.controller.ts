@@ -18,7 +18,6 @@ export class DeliveryController {
   async uploadFile(@Req() request: FastifyRequest): Promise<any> {
     // Handle multipart file upload with Fastify
     const files = await request.saveRequestFiles();
-    console.log(`DeliveryController => uploadFile => files:`, files);
     const deliveryFile = files.find(
       (file) => file.fieldname === 'deliveryFile',
     );
