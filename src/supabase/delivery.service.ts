@@ -21,7 +21,7 @@ export class DeliveryService {
 	async getDeliveryById(id: string): Promise<DeliveryItem> {
 		try {
 			this.logger.log(`Fetching delivery with ID: ${id}`);
-			const delivery = await this.deliveryRepository.findDeliveryById(id);
+			const delivery = await this.deliveryRepository.findDeliveryByCodigoPedido(id);
 
 			if (!delivery) {
 				this.logger.warn(`Delivery with ID: ${id} not found`);
