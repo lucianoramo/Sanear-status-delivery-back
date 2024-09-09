@@ -28,7 +28,7 @@ export class DeliveryRepository {
 		try {
 			this.logger.log(`Fetching delivery with codigoPedido: ${codigoPedido}`);
 			const { data, error } = await supabase.from('deliveries').select('*').eq('codigoPedido', codigoPedido).single();
-
+			this.logger.log(`response from database: ${data}`);
 			if (error) {
 				this.logger.error(`Error querying database for delivery with codigoPedido: ${codigoPedido}`, error);
 				return null;
