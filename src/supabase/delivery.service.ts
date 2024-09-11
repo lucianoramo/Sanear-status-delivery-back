@@ -99,6 +99,11 @@ export class DeliveryService {
 			});
 
 			this.logger.log('Delivery items extracted successfully');
+
+			if (deliveryItems.length > 3) {
+				deliveryItems.splice(-3);
+			}
+
 			return deliveryItems;
 		} catch (error) {
 			this.logger.error('Failed to extract delivery items from buffer', error);
